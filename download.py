@@ -43,7 +43,7 @@ text_head = "Загрузите данные в формате .xlsx"
 # test_download_head = f"<p style='font-family: Arial; color: black; font-size: 25px; text-align: center'>{text_head}</p>"
 # st.markdown(test_download_head, unsafe_allow_html=True)
 st.subheader(text_head)
-image = Image.open(fp=str(BASE_DIR) + r"\example.png")
+image = Image.open(fp=str(BASE_DIR) + r"/example.png")
 st.image(image, caption="Убедитесь, что вы загрузили данные в таком формате...")
 uploaded_file = st.file_uploader("Выберите файл для загрузки", type=["xlsx"])
 if uploaded_file is not None:
