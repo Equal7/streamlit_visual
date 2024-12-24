@@ -1,11 +1,11 @@
-import locale
+# import locale
 
 import streamlit as st
 import plotly.express as px
 import pandas as pd
 from pandas.tseries.offsets import DateOffset
 
-locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
+# locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
 
 st.markdown(
     """
