@@ -39,91 +39,144 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
 # print('df', st.session_state['df'])
-# NOTE: отключено 
+# NOTE: отключено
 def filtered_dataframe(start, finish, uchs):
-    st.session_state['result_df'] = st.session_state['df'][
-        (st.session_state['df']["Участок"].isin(uchs))
-        & (st.session_state['df']["Дата запуска"] >= pd.to_datetime(start))
-        & (st.session_state['df']["Дата остановки"] <= pd.to_datetime(finish))
+    st.session_state["result_df"] = st.session_state["df"][
+        (st.session_state["df"]["Участок"].isin(uchs))
+        & (st.session_state["df"]["Дата запуска"] >= pd.to_datetime(start))
+        & (st.session_state["df"]["Дата остановки"] <= pd.to_datetime(finish))
     ]
+
 
 def filter_by_date():
-    st.session_state['result_df'] = st.session_state['df'][
-       (st.session_state['df']["Дата запуска"] >= pd.to_datetime(st.session_state['filter_start_date']))
-        & (st.session_state['df']["Дата остановки"] <= pd.to_datetime(st.session_state['filter_finish_date']))
+    st.session_state["result_df"] = st.session_state["df"][
+        (
+            st.session_state["df"]["Дата запуска"]
+            >= pd.to_datetime(st.session_state["filter_start_date"])
+        )
+        & (
+            st.session_state["df"]["Дата остановки"]
+            <= pd.to_datetime(st.session_state["filter_finish_date"])
+        )
     ]
+
 
 def filter_by_uchs():
-    st.session_state['result_df'] = st.session_state['df'][
-        (st.session_state['df']["Участок"].isin(st.session_state['uchs']))
-        & (st.session_state['df']["Дата запуска"] >= pd.to_datetime(st.session_state['filter_start_date']))
-        & (st.session_state['df']["Дата остановки"] <= pd.to_datetime(st.session_state['filter_finish_date']))
+    st.session_state["result_df"] = st.session_state["df"][
+        (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
+        & (
+            st.session_state["df"]["Дата запуска"]
+            >= pd.to_datetime(st.session_state["filter_start_date"])
+        )
+        & (
+            st.session_state["df"]["Дата остановки"]
+            <= pd.to_datetime(st.session_state["filter_finish_date"])
+        )
     ]
 
-if 'df' in st.session_state:   
-    
+
+# st.header("Диграмма загруженности")
+
+if "df" in st.session_state:
+
     # Получите минимальную и максимальную дату
-    if 'min_date' not in st.session_state:
-        st.session_state['min_date'] = st.session_state['df']["Дата запуска"].dt.date.min()
-    if 'max_date' not in st.session_state:
-        st.session_state['max_date'] = st.session_state['df']["Дата остановки"].dt.date.max()
+    if "min_date" not in st.session_state:
+        st.session_state["min_date"] = st.session_state["df"][
+            "Дата запуска"
+        ].dt.date.min()
+    if "max_date" not in st.session_state:
+        st.session_state["max_date"] = st.session_state["df"][
+            "Дата остановки"
+        ].dt.date.max()
 
-    start_slider_date = st.session_state['min_date']
-    finish_slider_date = (st.session_state['min_date'] + DateOffset(days=7)).date()
+    start_slider_date = st.session_state["min_date"]
+    finish_slider_date = (st.session_state["min_date"] + DateOffset(days=7)).date()
 
-    if 'uchs' not in st.session_state:
-        st.session_state['uchs'] = st.session_state.get('uchs', None)
+    if "uchs" not in st.session_state:
+        st.session_state["uchs"] = st.session_state.get("uchs", None)
 
-    if 'result_df' not in st.session_state:
-        st.session_state['result_df'] = st.session_state['df']
+    if "result_df" not in st.session_state:
+        st.session_state["result_df"] = st.session_state["df"]
 
     with st.sidebar:
         st.header("Фильтры")
-        st.session_state['filter_start_date'], st.session_state['filter_finish_date'] = st.slider(
+        (
+            st.session_state["filter_start_date"],
+            st.session_state["filter_finish_date"],
+        ) = st.slider(
             "Выберите диапазон дат:",
-            min_value=st.session_state['min_date'],
-            max_value=st.session_state['max_date'],
+            min_value=st.session_state["min_date"],
+            max_value=st.session_state["max_date"],
             value=(start_slider_date, finish_slider_date),
             on_change=filter_by_date,
             # args=(start_date, end_date),
         )
-        st.session_state['uchs'] = st.multiselect(
+        st.session_state["uchs"] = st.multiselect(
             "Выберите участки:",
-            options=st.session_state['df']["Участок"].unique(),
+            options=st.session_state["df"]["Участок"].unique(),
             # on_change=filter_by_uchastok,
-            default=st.session_state['df']["Участок"].unique()[0],
+            default=st.session_state["df"]["Участок"].unique()[0],
         )
-        print('uchs', st.session_state['uchs'])
-        if st.session_state['uchs']:
-            unique_tasks = st.session_state['df'][st.session_state['df']['Участок'].isin(st.session_state['uchs'])]
-            uniq_tasks_list = unique_tasks["Задача"].unique()
+        # print("uchs", st.session_state["uchs"])
+        if st.session_state["uchs"]:
+            unique_tasks = st.session_state["df"][
+                st.session_state["df"]["Участок"].isin(st.session_state["uchs"])
+            ]
+            uniq_opers_list = unique_tasks["Операция"].unique()
             # st.write(st.session_state['uchs'])
-            st.session_state['tasks'] = st.multiselect(
+            st.session_state["operations"] = st.multiselect(
+                "Выберите ооперации:",
+                options=uniq_opers_list,
+                # on_change=filter_by_uchastok,
+                default=uniq_opers_list[0],
+            )
+        if st.session_state["uchs"] and st.session_state["operations"]:
+            unique_tasks_plus_operations = unique_tasks[
+                unique_tasks["Операция"].isin(st.session_state["operations"])
+            ]
+            # print('unique_tasks_plus_operations', unique_tasks_plus_operations)
+            uniq_tasks_list = unique_tasks_plus_operations["Задача"].unique()
+            # print('uniq_tasks_list', uniq_tasks_list)
+            st.session_state["tasks"] = st.multiselect(
                 "Выберите оборудование:",
                 options=uniq_tasks_list,
                 # on_change=filter_by_uchastok,
-                default=uniq_tasks_list[0],
+                default=uniq_tasks_list,
             )
-        if st.session_state['uchs'] and st.session_state['tasks']:
-            unique_tasks_plus_operations = unique_tasks[unique_tasks['Задача'].isin(st.session_state['tasks'])]
-            uniq_oper_list = unique_tasks_plus_operations["Операция"].unique()
-            st.session_state['operations'] = st.multiselect(
-                "Выберите операции:",
-                options=uniq_oper_list,
-                # on_change=filter_by_uchastok,
-                default=uniq_oper_list[0],
-            )
+
+        st.session_state["date_by_day"] = st.radio(
+            "Выберите диапазон отображения дат:",
+            [
+                "Авто",
+                "Дневной",
+            ],
+            horizontal=True,
+        )
         # with st.expander("See explanation2"):
         # st.session_state['tasks'] = st.container(height=150).multiselect(
-    
+
     # print('uchs', st.session_state['uchs'])
-    filtered_df = st.session_state['df'][
-        (st.session_state['df']["Участок"].isin(st.session_state['uchs']))
-        & (st.session_state['df']["Операция"].isin(st.session_state['operations']))
-        & (st.session_state['df']["Задача"].isin(st.session_state['tasks']))
-        & (st.session_state['df']["Дата запуска"] >= pd.to_datetime(st.session_state['filter_start_date']))
-        & (st.session_state['df']["Дата остановки"] <= pd.to_datetime(st.session_state['filter_finish_date']))
+    print(
+        "st.session_state['filter_start_date']", st.session_state["filter_start_date"]
+    )
+    print(
+        "st.session_state['filter_finish_date']", st.session_state["filter_finish_date"]
+    )
+    filtered_df = st.session_state["df"][
+        (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
+        & (st.session_state["df"]["Операция"].isin(st.session_state["operations"]))
+        & (st.session_state["df"]["Задача"].isin(st.session_state["tasks"]))
+        & (
+            st.session_state["df"]["Дата запуска"]
+            >= pd.to_datetime(st.session_state["filter_start_date"])
+        )
+        & (
+            st.session_state["df"]["Дата остановки"]
+            <= pd.to_datetime(st.session_state["filter_finish_date"])
+        )
     ]
 
     # print('filtered_df', filtered_df)
@@ -145,22 +198,85 @@ if 'df' in st.session_state:
         title="<b>Загруженность оборудования</b>",
         #                   , color=colors
     )
-    # Add range slider
+
     fig.update_layout(
+        # bargap=0.7,
+        bargroupgap=0.2,
+        # xaxis_range=[
+        #     filtered_df["Дата запуска"].min(),
+        #     filtered_df["Дата остановки"].max(),
+        # ],
         xaxis=dict(
-            rangeslider=dict(
-                visible=True
-            ),
-            type="date"
-        )
+            showgrid=True,
+            # rangeslider_visible=True,
+            side="bottom",
+            # tickmode="array",
+            # fixedrange=False,
+            # exponentformat='e',
+            gridcolor="silver",
+            # tickformat="Q%q %Y \n",
+            # ticklabelmode="period",
+            # ticks="outside",
+            # tickson="boundaries",
+            # tickwidth=0.1,
+            # layer="below traces",
+            # ticklen=20,
+            # tickfont=dict(family="Old Standard TT, serif", size=24, color="gray"),
+            # rangeselector=dict(
+            #     buttons=list(
+            #         [
+            #             dict(count=1, label="1m", step="month", stepmode="backward"),
+            #             dict(count=6, label="6m", step="month", stepmode="backward"),
+            #             dict(count=1, label="YTD", step="year", stepmode="todate"),
+            #             dict(count=1, label="1y", step="year", stepmode="backward"),
+            #             dict(step="all"),
+            #         ]
+            #     ),
+            #     x=0.37,
+            #     y=-0.05,
+            #     font=dict(family="Arial", size=14, color="darkgray"),
+            # ),
+        ),
+        yaxis=dict(
+            title="",
+            # autorange="min",
+            # automargin='width',
+            # autoshift=True,
+            # ticklen=10,
+            # showgrid=True,
+            # gridcolor="silver",
+            # showticklabels=True,
+            tickfont=dict(family="Old Standard TT, serif", size=16, color="gray"),
+        ),
+        legend=dict(
+            orientation="h",
+            # yanchor="bottom",
+            # y=0.8,
+            title="Операции: ",
+            # xanchor="right",
+            # x=1,
+            font=dict(family="Arial", size=12, color="darkgray"),
+        ),
+        # updatemenus=dict(
+        #     buttons=list(
+        #         [
+        #             dict(args=["dtick", 'D1'], label="False", method="restyle"),
+        #             dict(args=["dtick", True], label="True", method="restyle"),
+        #         ]
+        #     )
+        # ),
     )
+    if st.session_state["date_by_day"] == "Дневной":
+        fig.update_layout(xaxis=dict(dtick="D1"))
+    # Add range slider
+    # fig.update_layout(xaxis=dict(rangeslider=dict(visible=True), type="date"))
 
     fig.update_traces(  # marker_color='rgb(158,202,225)'
         marker_line_color="rgb(8,48,107)", marker_line_width=1.5, opacity=0.95
     )
 
     fig.update_layout(
-        title="<b>Загруженность оборудования</b>",
+        # title="<b>Загруженность оборудования</b>",
         title_x=0.3,
         title_font_size=36,
         xaxis_title="",
@@ -168,12 +284,8 @@ if 'df' in st.session_state:
         yaxis_title="",
         #     legend_title="Dimension: ",
         font=dict(family="Arial", size=32, color="darkgray"),
-        showlegend=False
+        # showlegend=False,
     )
-
 
     # Отобразите диаграмму на странице
     st.plotly_chart(fig)
-
-
-
