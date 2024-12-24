@@ -1,2 +1,2 @@
-# streamlit_app_gallery
-This is a multi-page streamlit app to showcase Sharone's streamlit app examples
+# Streamlit Gantt Example
+Приложение для просмотра excel-файлов в виде диграммы Ганта
