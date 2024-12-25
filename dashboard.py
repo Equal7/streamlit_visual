@@ -11,6 +11,11 @@ st.markdown(
     """
         <style>
         /* The input itself */
+        div[data-baseweb="select"] > div > div {
+            overflow-y: scroll;
+            max-height: 150px;
+        }
+
         div[data-baseweb="select"] > div {
             # background-color:#fff;
             # border-color:rgb(194, 189, 189);
@@ -22,7 +27,7 @@ st.markdown(
         span[data-baseweb="tag"] {
             # color: black;
             # font-size: 14px;
-            width: 45%;
+            width: auto;
             # background-color: black;
         }
 
@@ -51,17 +56,21 @@ def filtered_dataframe(start, finish, uchs):
     ]
 
 
-def filter_by_date():
-    st.session_state["result_df"] = st.session_state["df"][
-        (
-            st.session_state["df"]["Дата запуска"]
-            >= pd.to_datetime(st.session_state["filter_start_date"])
-        )
-        & (
-            st.session_state["df"]["Дата остановки"]
-            <= pd.to_datetime(st.session_state["filter_finish_date"])
-        )
-    ]
+# def filter_by_date():
+#     print('check!')
+#     st.session_state["result_df"] = st.session_state["df"][
+#         (
+#             st.session_state["df"]["Дата запуска"]
+#             >= pd.to_datetime(st.session_state["filter_start_date"])
+#         )
+#         & (
+#             st.session_state["df"]["Дата остановки"]
+#             <= pd.to_datetime(st.session_state["filter_finish_date"])
+#         )
+#     ]
+
+# def filter_check():
+#     st.seession_state['filter_check'] = not st.session_state['filter_check']
 
 
 def filter_by_uchs():
@@ -98,11 +107,10 @@ if "df" in st.session_state:
     if "uchs" not in st.session_state:
         st.session_state["uchs"] = st.session_state.get("uchs", None)
 
-    if "result_df" not in st.session_state:
-        st.session_state["result_df"] = st.session_state["df"]
+    # if "result_df" not in st.session_state:
+    #     st.session_state["result_df"] = st.session_state["df"]
 
     with st.sidebar:
-        st.header("Фильтры")
         (
             st.session_state["filter_start_date"],
             st.session_state["filter_finish_date"],
@@ -111,7 +119,7 @@ if "df" in st.session_state:
             min_value=st.session_state["min_date"],
             max_value=st.session_state["max_date"],
             value=(start_slider_date, finish_slider_date),
-            on_change=filter_by_date,
+            # on_change=filter_by_date,
             # args=(start_date, end_date),
         )
         st.session_state["uchs"] = st.multiselect(
@@ -128,10 +136,11 @@ if "df" in st.session_state:
             uniq_opers_list = unique_tasks["Операция"].unique()
             # st.write(st.session_state['uchs'])
             st.session_state["operations"] = st.multiselect(
-                "Выберите ооперации:",
+                "Выберите операции:",
                 options=uniq_opers_list,
                 # on_change=filter_by_uchastok,
                 default=uniq_opers_list[0],
+                # on_click=filter_check,
             )
         if st.session_state["uchs"] and st.session_state["operations"]:
             unique_tasks_plus_operations = unique_tasks[
@@ -187,6 +196,10 @@ if "df" in st.session_state:
         x_end="Дата остановки",
         y="Задача",
         hover_name="Операция",
+        category_orders={
+            # "Операция": sorted(filtered_df["Операция"].unique()),
+            "Задача": sorted(filtered_df["Задача"].unique()),
+        },
         color_discrete_sequence=px.colors.qualitative.Prism,
         opacity=0.5,
         range_x=None,
@@ -284,7 +297,7 @@ if "df" in st.session_state:
         yaxis_title="",
         #     legend_title="Dimension: ",
         font=dict(family="Arial", size=32, color="darkgray"),
-        # showlegend=False,
+        showlegend=False,
     )
 
     # Отобразите диаграмму на странице

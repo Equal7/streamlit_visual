@@ -34,7 +34,7 @@ def get_data(filename: str | None):
             "Дата запуска",
             "Дата остановки",
         ]
-    ]
+    ].sort_values(by=['Задача'])
     return dataframe
 
 
