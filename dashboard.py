@@ -87,14 +87,16 @@ def filter_by_oper():
     else:
         st.session_state["operations"] = st.session_state["oper_changer"]
 
+
 def filter_by_tasks():
     if "Всё оборудование" in st.session_state["task_changer"]:
         unique_uchs = st.session_state["df"][
-                st.session_state["df"]["Участок"].isin(st.session_state["uchs"])
-            ]
+            st.session_state["df"]["Участок"].isin(st.session_state["uchs"])
+        ]
         st.session_state["tasks"] = (
-            unique_uchs[unique_uchs["Операция"].isin(st.session_state["operations"])]
-            ['Задача']
+            unique_uchs[unique_uchs["Операция"].isin(st.session_state["operations"])][
+                "Задача"
+            ]
             .unique()
             .tolist()
         )
@@ -185,7 +187,11 @@ if "df" in st.session_state:
                     else uniq_opers_list
                 ),
                 key="oper_changer",
-                default=st.session_state["operations"],
+                default=(
+                    set(st.session_state["operations"]) & set(uniq_opers_list)
+                    if st.session_state["operations"]
+                    else None
+                ),
                 on_change=filter_by_oper,
             )
 
@@ -199,11 +205,15 @@ if "df" in st.session_state:
                 options=(
                     ["Всё оборудование"] + uniq_tasks_list
                     if len(uniq_tasks_list) > 1
-                    else uniq_tasks_list
+                    else 'uniq_tasks_list'
                 ),
                 key="task_changer",
                 on_change=filter_by_tasks,
-                default=st.session_state["tasks"],
+                default=(
+                    set(st.session_state["tasks"]) & set(uniq_tasks_list)
+                    if st.session_state["tasks"]
+                    else None
+                ),
             )
 
         st.session_state["date_by_day"] = st.radio(
@@ -227,6 +237,7 @@ if "df" in st.session_state:
         and st.session_state["filter_start_date"]
         and st.session_state["filter_finish_date"]
     ):
+        # print('1')
         filtered_df = st.session_state["df"][
             (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
             & (st.session_state["df"]["Операция"].isin(st.session_state["operations"]))
