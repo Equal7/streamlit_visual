@@ -44,12 +44,12 @@ st.markdown(
 )
 
 # NOTE: отключено
-def filtered_dataframe(start, finish, uchs):
-    st.session_state["result_df"] = st.session_state["df"][
-        (st.session_state["df"]["Участок"].isin(uchs))
-        & (st.session_state["df"]["Дата запуска"] >= pd.to_datetime(start))
-        & (st.session_state["df"]["Дата остановки"] <= pd.to_datetime(finish))
-    ]
+# def filtered_dataframe(start, finish, uchs):
+#     st.session_state["result_df"] = st.session_state["df"][
+#         (st.session_state["df"]["Участок"].isin(uchs))
+#         & (st.session_state["df"]["Дата запуска"] >= pd.to_datetime(start))
+#         & (st.session_state["df"]["Дата остановки"] <= pd.to_datetime(finish))
+#     ]
 
 # def filter_by_date():
 #     print('check!')
@@ -68,19 +68,37 @@ def filtered_dataframe(start, finish, uchs):
 #     st.seession_state['filter_check'] = not st.session_state['filter_check']
 
 
-def filter_by_uchs():
-    st.session_state["result_df"] = st.session_state["df"][
-        (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
-        & (
-            st.session_state["df"]["Дата запуска"]
-            >= pd.to_datetime(st.session_state["filter_start_date"])
-        )
-        & (
-            st.session_state["df"]["Дата остановки"]
-            <= pd.to_datetime(st.session_state["filter_finish_date"])
-        )
-    ]
+# def filter_by_uchs():
+#     st.session_state["result_df"] = st.session_state["df"][
+#         (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
+#         & (
+#             st.session_state["df"]["Дата запуска"]
+#             >= pd.to_datetime(st.session_state["filter_start_date"])
+#         )
+#         & (
+#             st.session_state["df"]["Дата остановки"]
+#             <= pd.to_datetime(st.session_state["filter_finish_date"])
+#         )
+#     ]
 
+def get_current_state_of_used_glossary(filtered_df: pd.DataFrame):
+    main_data = filtered_df
+    glossary_data = st.session_state['glos_df']
+    glossary_data["Задача"] = (
+            glossary_data["Название"].astype(str)
+            + "-"
+            + glossary_data["Серийный номер"].astype(str)
+        )
+    # main_data = main_data.sort_values(by='')
+    glossary_data = glossary_data[
+        [
+            'Участок',
+            'Задача',
+            'Порядок',
+        ]
+    ]
+    main_data = main_data.merge(glossary_data, how='left', on=['Участок','Задача'])
+    return main_data
 
 # st.header("Диграмма загруженности")
 
@@ -194,8 +212,10 @@ if "df" in st.session_state:
         )
     ]
 
+    filtered_df = get_current_state_of_used_glossary(filtered_df)
     # print('filtered_df', filtered_df)
-
+    # filtered_df.to_excel('asdasd.xlsx')
+    
     fig = px.timeline(
         filtered_df,
         x_start="Дата запуска",
@@ -204,7 +224,7 @@ if "df" in st.session_state:
         hover_name="Операция",
         category_orders={
             # "Операция": sorted(filtered_df["Операция"].unique()),
-            "Задача": sorted(filtered_df["Задача"].unique()),
+            "Задача": filtered_df.sort_values(by='Порядок', ascending=True)['Задача'].unique(),
         },
         color_discrete_sequence=px.colors.qualitative.Prism,
         opacity=0.5,
