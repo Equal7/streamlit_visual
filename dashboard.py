@@ -1,11 +1,9 @@
-# import locale
 
 import streamlit as st
 import plotly.express as px
 import pandas as pd
 from pandas.tseries.offsets import DateOffset
 
-# locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
 
 st.markdown(
     """
@@ -45,8 +43,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# print('df', st.session_state['df'])
 # NOTE: отключено
 def filtered_dataframe(start, finish, uchs):
     st.session_state["result_df"] = st.session_state["df"][
@@ -54,7 +50,6 @@ def filtered_dataframe(start, finish, uchs):
         & (st.session_state["df"]["Дата запуска"] >= pd.to_datetime(start))
         & (st.session_state["df"]["Дата остановки"] <= pd.to_datetime(finish))
     ]
-
 
 # def filter_by_date():
 #     print('check!')
@@ -133,13 +128,12 @@ if "df" in st.session_state:
         )
         if "Все участки" in st.session_state["uchs"]:
             st.session_state["uchs"] = st.session_state["df"]["Участок"].unique()
-        # print("uchs", st.session_state["uchs"])
+
         if st.session_state["uchs"]:
             unique_tasks = st.session_state["df"][
                 st.session_state["df"]["Участок"].isin(st.session_state["uchs"])
             ]
             uniq_opers_list = unique_tasks["Операция"].unique().tolist()
-            # st.write(st.session_state['uchs'])
             st.session_state["operations"] = st.multiselect(
                 "Выберите операции:",
                 options=(
@@ -157,9 +151,7 @@ if "df" in st.session_state:
             unique_tasks_plus_operations = unique_tasks[
                 unique_tasks["Операция"].isin(st.session_state["operations"])
             ]
-            # print('unique_tasks_plus_operations', unique_tasks_plus_operations)
             uniq_tasks_list = unique_tasks_plus_operations["Задача"].unique().tolist()
-            # print('uniq_tasks_list', uniq_tasks_list)
             st.session_state["tasks"] = st.multiselect(
                 "Выберите оборудование:",
                 options=(
@@ -181,10 +173,7 @@ if "df" in st.session_state:
             ],
             horizontal=True,
         )
-        # with st.expander("See explanation2"):
-        # st.session_state['tasks'] = st.container(height=150).multiselect(
 
-    # print('uchs', st.session_state['uchs'])
     # print(
     #     "st.session_state['filter_start_date']", st.session_state["filter_start_date"]
     # )
