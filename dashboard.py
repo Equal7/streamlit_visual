@@ -240,11 +240,8 @@ if "df" in st.session_state:
                 <= pd.to_datetime(st.session_state["filter_finish_date"])
             )
         ]
-        # print(filtered_df)
 
-        # if not filtered_df.empty:
         filtered_df = get_current_state_of_used_glossary(filtered_df)
-        # print(filtered_df)
 
         fig = px.timeline(
             filtered_df,
