@@ -120,9 +120,6 @@ if "df" in st.session_state:
     if "uchs" not in st.session_state:
         st.session_state["uchs"] = st.session_state.get("uchs", None)
 
-    # if "result_df" not in st.session_state:
-    #     st.session_state["result_df"] = st.session_state["df"]
-
     with st.sidebar:
         (
             st.session_state["filter_start_date"],
@@ -132,8 +129,6 @@ if "df" in st.session_state:
             min_value=st.session_state["min_date"],
             max_value=st.session_state["max_date"],
             value=(start_slider_date, finish_slider_date),
-            # on_change=filter_by_date,
-            # args=(start_date, end_date),
         )
         st.session_state["uchs"] = st.multiselect(
             "Выберите участки:",
@@ -192,12 +187,6 @@ if "df" in st.session_state:
             horizontal=True,
         )
 
-    # print(
-    #     "st.session_state['filter_start_date']", st.session_state["filter_start_date"]
-    # )
-    # print(
-    #     "st.session_state['filter_finish_date']", st.session_state["filter_finish_date"]
-    # )
     filtered_df = st.session_state["df"][
         (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
         & (st.session_state["df"]["Операция"].isin(st.session_state["operations"]))
@@ -213,9 +202,7 @@ if "df" in st.session_state:
     ]
 
     filtered_df = get_current_state_of_used_glossary(filtered_df)
-    # print('filtered_df', filtered_df)
-    # filtered_df.to_excel('asdasd.xlsx')
-    
+
     fig = px.timeline(
         filtered_df,
         x_start="Дата запуска",
