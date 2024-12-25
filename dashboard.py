@@ -168,12 +168,12 @@ if "df" in st.session_state:
         # st.session_state['tasks'] = st.container(height=150).multiselect(
 
     # print('uchs', st.session_state['uchs'])
-    print(
-        "st.session_state['filter_start_date']", st.session_state["filter_start_date"]
-    )
-    print(
-        "st.session_state['filter_finish_date']", st.session_state["filter_finish_date"]
-    )
+    # print(
+    #     "st.session_state['filter_start_date']", st.session_state["filter_start_date"]
+    # )
+    # print(
+    #     "st.session_state['filter_finish_date']", st.session_state["filter_finish_date"]
+    # )
     filtered_df = st.session_state["df"][
         (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
         & (st.session_state["df"]["Операция"].isin(st.session_state["operations"]))
