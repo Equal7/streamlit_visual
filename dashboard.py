@@ -237,7 +237,6 @@ if "df" in st.session_state:
         and st.session_state["filter_start_date"]
         and st.session_state["filter_finish_date"]
     ):
-        # print('1')
         filtered_df = st.session_state["df"][
             (st.session_state["df"]["Участок"].isin(st.session_state["uchs"]))
             & (st.session_state["df"]["Операция"].isin(st.session_state["operations"]))
