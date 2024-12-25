@@ -124,37 +124,54 @@ if "df" in st.session_state:
         )
         st.session_state["uchs"] = st.multiselect(
             "Выберите участки:",
-            options=st.session_state["df"]["Участок"].unique(),
-            # on_change=filter_by_uchastok,
+            options=(
+                ["Все участки"] + st.session_state["df"]["Участок"].unique().tolist()
+                if len(st.session_state["df"]["Участок"].unique().tolist()) > 1
+                else st.session_state["df"]["Участок"].unique().tolist()
+            ),
             default=st.session_state["df"]["Участок"].unique()[0],
         )
+        if "Все участки" in st.session_state["uchs"]:
+            st.session_state["uchs"] = st.session_state["df"]["Участок"].unique()
         # print("uchs", st.session_state["uchs"])
         if st.session_state["uchs"]:
             unique_tasks = st.session_state["df"][
                 st.session_state["df"]["Участок"].isin(st.session_state["uchs"])
             ]
-            uniq_opers_list = unique_tasks["Операция"].unique()
+            uniq_opers_list = unique_tasks["Операция"].unique().tolist()
             # st.write(st.session_state['uchs'])
             st.session_state["operations"] = st.multiselect(
                 "Выберите операции:",
-                options=uniq_opers_list,
+                options=(
+                    ["Все операции"] + uniq_opers_list
+                    if len(uniq_opers_list) > 1
+                    else uniq_opers_list
+                ),
                 # on_change=filter_by_uchastok,
                 default=uniq_opers_list[0],
                 # on_click=filter_check,
             )
+            if "Все операции" in st.session_state["operations"]:
+                st.session_state["operations"] = uniq_opers_list
         if st.session_state["uchs"] and st.session_state["operations"]:
             unique_tasks_plus_operations = unique_tasks[
                 unique_tasks["Операция"].isin(st.session_state["operations"])
             ]
             # print('unique_tasks_plus_operations', unique_tasks_plus_operations)
-            uniq_tasks_list = unique_tasks_plus_operations["Задача"].unique()
+            uniq_tasks_list = unique_tasks_plus_operations["Задача"].unique().tolist()
             # print('uniq_tasks_list', uniq_tasks_list)
             st.session_state["tasks"] = st.multiselect(
                 "Выберите оборудование:",
-                options=uniq_tasks_list,
+                options=(
+                    ["Все задачи"] + uniq_tasks_list
+                    if len(uniq_tasks_list) > 1
+                    else uniq_tasks_list
+                ),
                 # on_change=filter_by_uchastok,
                 default=uniq_tasks_list,
             )
+            if "Все задачи" in st.session_state["tasks"]:
+                st.session_state["tasks"] = uniq_tasks_list
 
         st.session_state["date_by_day"] = st.radio(
             "Выберите диапазон отображения дат:",
